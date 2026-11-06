@@ -124,9 +124,17 @@ body { min-height: max(884px, 100dvh); }
     </div>
 
     <div class="field-group">
-      <label for="f-photo">URL de la foto</label>
-      <input type="url" id="f-photo" placeholder="https://ejemplo.com/mi-foto.jpg"/>
-      <p class="hint">Pega la dirección URL de tu foto. Puedes subirla a <a href="https://imgur.com" target="_blank" class="text-secondary underline">Imgur</a> o usar una de Google.</p>
+      <label for="f-photo-file">Foto de perfil</label>
+      <div class="flex gap-2 flex-wrap">
+        <label for="f-photo-file" class="cursor-pointer py-2.5 px-4 rounded-xl bg-primary-container text-on-primary font-label-lg text-label-lg inline-flex items-center gap-2" style="display:inline-flex;margin:0;letter-spacing:normal;font-size:14px;color:#fff">
+          <span class="material-symbols-outlined text-[18px]">upload</span> Subir foto
+        </label>
+        <button type="button" id="btn-photo-clear" class="py-2.5 px-4 rounded-xl bg-surface-container-high text-on-surface-variant font-label-lg text-label-lg">Quitar foto</button>
+      </div>
+      <input type="file" id="f-photo-file" accept="image/*" class="hidden" style="display:none"/>
+      <p class="hint" id="photo-msg">Elige una imagen de tu dispositivo; se recorta y reduce automáticamente.</p>
+      <label for="f-photo" style="margin-top:12px">O pega la URL de una foto (opcional)</label>
+      <input type="text" id="f-photo" placeholder="https://ejemplo.com/mi-foto.jpg"/>
     </div>
 
     <div class="flex items-center gap-2 mb-4 mt-4">
@@ -317,6 +325,36 @@ function showToast(message, type) {
       photoPlaceholder.classList.remove('hidden');
     }
   }
+
+  // Subir foto desde el dispositivo: recorta cuadrado y reduce a 320px
+  document.getElementById('f-photo-file').addEventListener('change', (ev) => {
+    const file = ev.target.files && ev.target.files[0];
+    const msg = document.getElementById('photo-msg');
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { msg.textContent = 'Ese archivo no es una imagen.'; return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const size = 320, c = document.createElement('canvas');
+        c.width = c.height = size;
+        const side = Math.min(img.width, img.height);
+        c.getContext('2d').drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, size, size);
+        fPhoto.value = c.toDataURL('image/jpeg', 0.85);
+        updatePreview();
+        msg.textContent = 'Foto lista. Pulsa Guardar para aplicarla en todo el sitio.';
+      };
+      img.onerror = () => { msg.textContent = 'No pude leer esa imagen. Prueba con JPG o PNG.'; };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+    ev.target.value = '';
+  });
+  document.getElementById('btn-photo-clear').addEventListener('click', () => {
+    fPhoto.value = '';
+    updatePreview();
+    document.getElementById('photo-msg').textContent = 'Foto quitada. Pulsa Guardar para aplicar el cambio.';
+  });
 
   // Save
   document.getElementById('profile-form').addEventListener('submit', async (e) => {

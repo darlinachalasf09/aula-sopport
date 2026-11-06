@@ -85,6 +85,19 @@
       }).observe(document.body, { childList: true, subtree: true, characterData: true });
     }
   }
+  // Botón flotante de acceso a "Mi perfil y personalización" (todas las páginas menos perfil.html)
+  function addFab() {
+    if (/perfil\.html$/.test(location.pathname) || document.getElementById('ss-fab')) return;
+    var a = document.createElement('a');
+    a.id = 'ss-fab'; a.href = 'perfil.html'; a.title = 'Mi perfil y personalización';
+    a.setAttribute('aria-label', 'Mi perfil y personalización');
+    a.style.cssText = 'position:fixed;right:14px;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:60;width:48px;height:48px;border-radius:50%;background:' +
+      ((window.tailwind && tailwind.config.theme.extend.colors['primary-container']) || '#0f2042') +
+      ';color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.25);text-decoration:none';
+    a.innerHTML = '<span class="material-symbols-outlined" style="font-size:24px">settings</span>';
+    document.body.appendChild(a);
+  }
+  var _init = init; init = function () { _init(); addFab(); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 
   // --- API pública (la usa perfil.html) ---
