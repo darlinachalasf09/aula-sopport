@@ -1,6 +1,7 @@
 {
-  "name": "aula-abierta-blog-docente",
+  "name": "aula-support",
   "version": "1.0.0",
-  "description": "Blog educativo docente - Aula Abierta. Prototipo creado con Stitch y desplegado en Render.",
-  "private": true
+  "description": "AULA SUPPORT - blog educativo estático de LIC. DARLINA CHALAS",
+  "private": true,
+  "scripts": { "build": "echo No build needed" }
 }

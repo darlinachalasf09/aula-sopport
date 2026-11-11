@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avance · AULA SUPPORT</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-amber-50/50 text-slate-700 min-h-screen flex flex-col">
+<div id="nav"></div>
+<main class="max-w-5xl w-full mx-auto px-4 py-8 flex-1">
+
+<div class="rounded-3xl bg-gradient-to-r from-indigo-100 via-violet-100 to-sky-100 p-6 mb-5">
+  <h1 class="text-3xl font-bold text-indigo-900">🚀 Carrera Espacial</h1>
+  <p>Cada tarea entregada y cada buena nota empujan tu nave hacia la meta 🪐. ¡Llega primero!</p>
+</div>
+<select id="f" class="w-full border border-slate-300 rounded-xl px-3 py-2 bg-white max-w-md mb-4"></select>
+<div id="pista" class="space-y-3 mb-8"></div>
+<h2 class="text-xl font-bold mb-2">🏆 Clasificación</h2><ol id="rank" class="space-y-2 mb-8"></ol>
+<p class="text-xs text-slate-500">Puntaje = 50% tareas entregadas + 50% calificación. 🏅 Excelencia: nota ≥ 90 · 🛰️ Al día: todas las tareas · 🌟 Piloto estelar: puntaje ≥ 75.</p>
+</main>
+<div id="foot"></div>
+<script src="db.js"></script>
+<script src="profile-loader.js"></script>
+<script>
+DB.init().then(async()=>{
+
+const M = await DB.get("materias"), S = await DB.get("estudiantes"), e = DB.esc;
+f.innerHTML = '<option value="all">Todas las asignaturas (carrera general)</option>' + M.map(m => `<option value="${m.id}">${e(m.nombre)}</option>`).join("");
+const calc = p => p.tot ? Math.round(p.ent / p.tot * 50 + p.nota * 0.5) : 0;
+const data = s => { const ps = f.value === "all" ? Object.values(s.prog) : [s.prog[f.value] || {ent:0,tot:0,nota:0}];
+  const ent = ps.reduce((a, p) => a + p.ent, 0), tot = ps.reduce((a, p) => a + p.tot, 0), nota = Math.round(ps.reduce((a, p) => a + p.nota, 0) / (ps.length || 1));
+  return { s, ent, tot, nota, pct: calc({ent, tot, nota}) }; };
+const draw = () => { const D = S.map(data).sort((a, b) => b.pct - a.pct), med = ["🥇", "🥈", "🥉"];
+  pista.innerHTML = D.map(d => { const fuel = d.tot ? Math.round(d.ent / d.tot * 100) : 0, badges = (d.nota >= 90 ? "🏅 " : "") + (d.tot && d.ent === d.tot ? "🛰️ " : "") + (d.pct >= 75 ? "🌟" : "");
+    return `<div class="bg-white rounded-2xl border border-slate-200 p-4"><div class="flex justify-between text-sm mb-2"><b>${e(d.s.nombre)}</b><span>${badges} ${d.pct} pts</span></div>
+    <div class="relative h-12 rounded-full bg-indigo-100 overflow-hidden"><div class="absolute inset-y-1/2 left-3 right-10 border-t-2 border-dashed border-indigo-300"></div><span class="absolute right-2 top-2 text-2xl">🪐</span>
+    <span class="absolute top-1 text-3xl transition-all duration-700" style="left:calc(${Math.min(d.pct, 100)} * (100% - 5rem) / 100 + 0.5rem)">${d.s.nave}</span></div>
+    <div class="mt-2 text-xs text-slate-500">⛽ Combustible (tareas ${d.ent}/${d.tot})</div><div class="h-2 rounded-full bg-emerald-100"><div class="h-2 rounded-full bg-emerald-300" style="width:${fuel}%"></div></div>
+    <div class="text-xs mt-1">Calificación promedio: <b>${d.nota}</b>/100</div></div>`; }).join("");
+  rank.innerHTML = D.map((d, i) => `<li class="flex justify-between bg-amber-50 border border-amber-100 rounded-xl px-4 py-2"><span>${med[i] || (i + 1) + "."} ${d.s.nave} ${e(d.s.nombre)}</span><b>${d.pct} pts</b></li>`).join(""); };
+f.onchange = draw; draw();
+});
+</script>
+</body></html>

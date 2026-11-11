@@ -1,26 +1,9 @@
-# Aula Abierta — Mi Blog Docente
+# AULA SUPPORT
 
-Blog educativo para docentes de nivel primario y secundario en República Dominicana.
+Blog educativo estático de **LIC. DARLINA CHALAS**.
 
-## Pantallas
+HTML + Tailwind (CDN) + JavaScript vanilla. Los datos se guardan en IndexedDB (`db.js`).
 
-- **Inicio** — Página principal con artículos destacados y áreas curriculares
-- **Publicaciones** — Listado de publicaciones educativas
-- **Lectura** — Vista de lectura de artículos
-- **Recursos** — Recursos didácticos descargables
-- **Panel** — Panel de control docente (admin)
-- **Gestión** — Gestión de artículos
-- **Editor** — Editor de artículos
-- **Biblioteca** — Biblioteca multimedia
-- **Moderación** — Moderación de comentarios
+**Render (Static Site):** Branch `main`, Build Command `echo No build needed`, Publish Directory `.`
 
-## Tecnologías
-
-- HTML5 + Tailwind CSS (CDN)
-- IndexedDB para persistencia local (db.js)
-- Google Material Symbols
-- Tipografías: Literata + Source Sans 3
-
-## Despliegue
-
-Sitio estático desplegado en Render (Free Tier).
+Asignaturas: Comunicación Empresarial, Operaciones Administrativas de Compraventa, Gestión Fiscal y Tributaria.
